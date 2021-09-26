@@ -1,0 +1,9 @@
+/Users/joelhilmersson/Documents/CODE/SPARETIME/draw-gh/src/bin/Debug/net45/draw-gh.dll
+/Users/joelhilmersson/Documents/CODE/SPARETIME/draw-gh/src/bin/Debug/net45/draw-gh.pdb
+/Users/joelhilmersson/Documents/CODE/SPARETIME/draw-gh/src/obj/Debug/net45/draw-gh.csprojAssemblyReference.cache
+/Users/joelhilmersson/Documents/CODE/SPARETIME/draw-gh/src/obj/Debug/net45/draw-gh.AssemblyInfoInputs.cache
+/Users/joelhilmersson/Documents/CODE/SPARETIME/draw-gh/src/obj/Debug/net45/draw-gh.AssemblyInfo.cs
+/Users/joelhilmersson/Documents/CODE/SPARETIME/draw-gh/src/obj/Debug/net45/draw-gh.csproj.CoreCompileInputs.cache
+/Users/joelhilmersson/Documents/CODE/SPARETIME/draw-gh/src/obj/Debug/net45/draw-gh.dll
+/Users/joelhilmersson/Documents/CODE/SPARETIME/draw-gh/src/obj/Debug/net45/draw-gh.pdb
+/Users/joelhilmersson/Documents/CODE/SPARETIME/draw-gh/src/obj/Debug/net45/draw-gh.GeneratedMSBuildEditorConfig.editorconfig

@@ -27,18 +27,18 @@ namespace drawgh.Components
         {
         }
 
-        protected override void AppendAdditionalComponentMenuItems(ToolStripDropDown menu)
-        {
-            Menu_AppendItem(menu, "Continuous Refresh?", Menu_PanelTypeChanged, true, continuousUpdate).Tag = "Refresh";
-        }
+        //protected override void AppendAdditionalComponentMenuItems(ToolStripDropDown menu)
+        //{
+        //    Menu_AppendItem(menu, "Continuous Refresh?", Menu_PanelTypeChanged, true, continuousUpdate).Tag = "Refresh";
+        //}
 
 
-        private void Menu_PanelTypeChanged(object sender, EventArgs e)
-        {
-            if (sender is ToolStripMenuItem item && item.Tag is "Refresh")
-                continuousUpdate = !continuousUpdate;
-            this.ExpireSolution(true);
-        }
+        //private void Menu_PanelTypeChanged(object sender, EventArgs e)
+        //{
+        //    if (sender is ToolStripMenuItem item && item.Tag is "Refresh")
+        //        continuousUpdate = !continuousUpdate;
+        //    this.ExpireSolution(true);
+        //}
 
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
@@ -84,7 +84,9 @@ namespace drawgh.Components
             DA.SetDataList(0, this.outline);
         }
 
-        protected override System.Drawing.Bitmap Icon
+        public override GH_Exposure Exposure => GH_Exposure.primary;
+
+        protected override Bitmap Icon
         {
             get
             {
@@ -92,11 +94,6 @@ namespace drawgh.Components
             }
         }
 
-        /// <summary>
-        /// Each component must have a unique Guid to identify it. 
-        /// It is vital this Guid doesn't change otherwise old ghx files 
-        /// that use the old ID will partially fail during loading.
-        /// </summary>
         public override Guid ComponentGuid
         {
             get { return new Guid("052a3feb-d781-460f-8850-b186e3b30196"); }

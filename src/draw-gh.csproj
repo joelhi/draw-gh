@@ -19,4 +19,7 @@
   <ItemGroup>
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Components\DrawCurvePattern.cs" />
+  </ItemGroup>
 </Project>

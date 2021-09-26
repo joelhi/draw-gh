@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "9qNAiNsHPKZiJgSfVycoj3OTSfb0XHBPk+AwRNxH2THtxc8wl1pHGj7MXQKWsMaLxa69GxSwt9faLJDeaIyYoA==",
+  "success": true,
+  "projectFilePath": "/Users/joelhilmersson/Documents/CODE/SPARETIME/draw-gh/src/draw-gh.csproj",
+  "expectedPackageFiles": [
+    "/Users/joelhilmersson/.nuget/packages/grasshopper/6.16.19190.7001/grasshopper.6.16.19190.7001.nupkg.sha512",
+    "/Users/joelhilmersson/.nuget/packages/rhinocommon/6.16.19190.7001/rhinocommon.6.16.19190.7001.nupkg.sha512"
+  ],
+  "logs": []
+}
