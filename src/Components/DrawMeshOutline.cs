@@ -9,6 +9,8 @@ using Rhino.Geometry;
 using drawgh.Utils;
 using System.Drawing;
 using Rhino.Geometry.Intersect;
+using Grasshopper.GUI;
+using System.Windows.Forms;
 
 namespace drawgh.Components
 {
@@ -20,12 +22,41 @@ namespace drawgh.Components
         Curve[] outline = null;
         Mesh projected = new Mesh();
         uint counter = 0;
+        int timestep = 100;
 
         public DrawMeshOutline()
           : base("Draw Mesh Outline", "meshOutline",
             "Preview the outlines of a mesh, with a specific colour and thickness.",
             "Draw", GeneralUtils.PluginName)
         {
+        }
+
+        protected override void AppendAdditionalComponentMenuItems(ToolStripDropDown menu)
+        {
+
+            GH_DocumentObject.Menu_AppendTextItem(menu, "Time step in ms", null, null, false, 0, false);
+            var timeStep = GH_DocumentObject.Menu_AppendTextItem(menu, timestep.ToString(), null, Menu_SetSteps, false); ;
+            timeStep.ToolTipText = "Root Mode Steps";
+
+            menu.Closed += contextMenuStrip_Closing;
+        }
+
+        private void Menu_SetSteps(GH_MenuTextBox sender, string text)
+        {
+            try
+            {
+                timestep = int.Parse(text);
+            }
+            catch (Exception)
+            {
+                timestep = 100;
+            }
+        }
+
+
+        private void contextMenuStrip_Closing(object sender, EventArgs e)
+        {
+            this.ExpireSolution(true);
         }
 
         public override void CreateAttributes()
@@ -38,7 +69,6 @@ namespace drawgh.Components
             pManager.AddMeshParameter("Mesh", "M", "Mesh to draw outlines for", GH_ParamAccess.item);
             pManager.AddColourParameter("Colour", "col", "Colour for outline display", GH_ParamAccess.item, Color.Black);
             pManager.AddIntegerParameter("Thickness", "t", "Thickness of line preview", GH_ParamAccess.item, 1);
-            //pManager.AddBooleanParameter("Refresh", "r", "Refresh, if display goes missing", GH_ParamAccess.item, false);
         }
 
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
@@ -47,18 +77,23 @@ namespace drawgh.Components
 
         protected override void SolveInstance(IGH_DataAccess DA)
         {
+            DA.GetData(1, ref col);
+            DA.GetData(2, ref t);
+
             if (counter == Rhino.RhinoDoc.ActiveDoc.Views.ActiveView.ActiveViewport.ChangeCounter)
             {
                 this.Message = "Static View";
-                this.OnPingDocument().ScheduleSolution(100, callback);
+                this.OnPingDocument().ScheduleSolution(timestep, callback);
                 return;
             }
+
+            if (timestep < 5)
+                timestep = 5;
 
             Mesh mesh = null;
 
             DA.GetData(0, ref mesh);
-            DA.GetData(1, ref col);
-            DA.GetData(2, ref t);
+            
 
             if (Rhino.RhinoDoc.ActiveDoc.Views.ActiveView.ActiveViewport.IsParallelProjection)
             {
@@ -80,7 +115,7 @@ namespace drawgh.Components
             this.Message = "View Updated";
 
             counter = Rhino.RhinoDoc.ActiveDoc.Views.ActiveView.ActiveViewport.ChangeCounter;
-            this.OnPingDocument().ScheduleSolution(100, callback);
+            this.OnPingDocument().ScheduleSolution(timestep, callback);
 
         }
 
@@ -104,6 +139,9 @@ namespace drawgh.Components
             var dp = args.Display;
 
             if (outline is null)
+                return;
+
+            if (dp.IsDynamicDisplay)
                 return;
 
             for (int i = 0; i < outline.Length; i++)

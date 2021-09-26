@@ -1,10 +1,10 @@
 ﻿<Properties StartupConfiguration="{F937B754-243C-488B-8E7A-6BB946A6A001}|Default">
   <MonoDevelop.Ide.ItemProperties.draw-gh PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Components/SaveView.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Components/DrawMeshOutline.cs">
     <Files>
       <File FileName="Components/GetMeshOutline.cs" Line="61" Column="13" />
-      <File FileName="Components/DrawMeshOutline.cs" Line="76" Column="43" />
-      <File FileName="Components/SaveView.cs" Line="1" Column="1" />
+      <File FileName="Components/DrawMeshOutline.cs" Line="33" Column="94" />
+      <File FileName="Components/SaveView.cs" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -12,9 +12,8 @@
           <Node name="draw-gh" expanded="True">
             <Node name="draw-gh" expanded="True">
               <Node name="Components" expanded="True">
-                <Node name="SaveView.cs" selected="True" />
+                <Node name="DrawMeshOutline.cs" selected="True" />
               </Node>
-              <Node name="Utils" expanded="True" />
             </Node>
           </Node>
         </State>
