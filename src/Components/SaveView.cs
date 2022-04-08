@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Drawing;
+using drawgh.Utils;
 using Grasshopper;
 using Grasshopper.Kernel;
+using Rhino.Display;
 using Rhino.Geometry;
 
 namespace drawgh.Components
@@ -19,7 +21,7 @@ namespace drawgh.Components
         public SaveView()
           : base("SaveView", "Nickname",
             "SaveView description",
-            "Category", "Subcategory")
+            GeneralUtils.PluginName, "Save")
         {
         }
 
@@ -28,6 +30,9 @@ namespace drawgh.Components
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
+            pManager.AddTextParameter("File Path", "path", "Path to save file at.", GH_ParamAccess.item);
+            pManager.AddNumberParameter("Scale", "scale", "Scale", GH_ParamAccess.item, 1.0);
+            pManager.AddBooleanParameter("Save", "save", "Save image", GH_ParamAccess.item, false);
         }
 
         /// <summary>
@@ -44,6 +49,28 @@ namespace drawgh.Components
         /// to store data in output parameters.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
+            double scale = 1;
+            string path = "";
+            bool save = false;
+
+            DA.GetData(0, ref path);
+            DA.GetData(1, ref scale);
+            DA.GetData(2, ref save);
+
+            var s = Rhino.RhinoDoc.ActiveDoc.Views.ActiveView.Size;
+
+            var newHeight = s.Height * scale;
+            var newWidth = s.Width * scale;
+
+            s.Height = (int)newHeight;
+            s.Width = (int)newWidth;
+
+            if (save)
+            { 
+                var bitmap = Rhino.RhinoDoc.ActiveDoc.Views.ActiveView.CaptureToBitmap(s, false, false, false);
+
+                bitmap.Save(path);
+            }
         }
 
         /// <summary>

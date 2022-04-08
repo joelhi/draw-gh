@@ -23,7 +23,7 @@ namespace drawgh.Components
         public GetMeshOutline()
           : base("Get Mesh Outline", "meshOutline",
             "Get the outlines of a mesh, at the current display view.",
-            "Draw", GeneralUtils.PluginName)
+             GeneralUtils.PluginName,"Draw")
         {
         }
 

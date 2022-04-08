@@ -20,14 +20,16 @@ namespace drawgh.Components
         int t = 1;
         Color col = Color.Black;
         Curve[] outline = null;
-        Mesh projected = new Mesh();
+        Mesh mesh;
         uint counter = 0;
         int timestep = 100;
+        bool wasDynamic = false;
+        Point3d oldCameraLocation = Rhino.RhinoDoc.ActiveDoc.Views.ActiveView.ActiveViewport.CameraLocation;
 
         public DrawMeshOutline()
           : base("Draw Mesh Outline", "meshOutline",
             "Preview the outlines of a mesh, with a specific colour and thickness.",
-            "Draw", GeneralUtils.PluginName)
+            GeneralUtils.PluginName, "Draw")
         {
         }
 
@@ -90,11 +92,19 @@ namespace drawgh.Components
             if (timestep < 5)
                 timestep = 5;
 
-            Mesh mesh = null;
-
             DA.GetData(0, ref mesh);
-            
 
+            GenerateOutline(mesh);
+            
+            this.Message = "View Updated";
+
+            counter = Rhino.RhinoDoc.ActiveDoc.Views.ActiveView.ActiveViewport.ChangeCounter;
+            this.OnPingDocument().ScheduleSolution(5, callback);
+
+        }
+
+        private void GenerateOutline(Mesh mesh)
+        {
             if (Rhino.RhinoDoc.ActiveDoc.Views.ActiveView.ActiveViewport.IsParallelProjection)
             {
                 // Get the active Rhino Viewport
@@ -105,17 +115,50 @@ namespace drawgh.Components
             }
             else
             {
-                // Get the active Rhino Viewport
-                var viewplane = Rhino.RhinoDoc.ActiveDoc.Views.ActiveView.ActiveViewport;
+                Plane pl = Plane.Unset;
+                Plane plProject = Plane.Unset;
+                Plane PL = Plane.Unset;
+                Mesh camProjected = new Mesh();
 
-                // Generate outlines based on this viewport.
-                outline = mesh.GetOutlines(viewplane).Select(pl => pl.ToNurbsCurve()).ToArray();
+
+                Rhino.Display.RhinoViewport view = Rhino.RhinoDoc.ActiveDoc.Views.ActiveView.ActiveViewport;
+
+                view.GetFrustumFarPlane(out pl);
+                view.GetFrustumNearPlane(out plProject);
+                view.GetCameraFrame(out PL);
+
+                Point3d camPoint = PL.Origin;
+
+                if (view.IsParallelProjection)
+                {
+                    foreach (Point3d pt in mesh.Vertices)
+                    {
+                        camProjected.Vertices.Add(plProject.ClosestPoint(pt));
+                    }
+                }
+                else
+                {
+
+                    Line placementLn = new Line(pl.Origin, plProject.Origin);
+
+                    plProject.Origin = placementLn.PointAt(0.99);
+
+
+                    foreach (Point3d pt in mesh.Vertices)
+                    {
+                        Line ln = new Line(camPoint, pt);
+                        double t = 0;
+
+                        var ev = Intersection.LinePlane(ln, plProject, out t);
+
+                        camProjected.Vertices.Add(ln.PointAt(t));
+                    }
+
+                }
+
+                camProjected.Faces.AddFaces(mesh.Faces.ToArray());
+                outline = camProjected.GetOutlines(plProject).Select(pll => pll.ToNurbsCurve()).ToArray(); ;
             }
-
-            this.Message = "View Updated";
-
-            counter = Rhino.RhinoDoc.ActiveDoc.Views.ActiveView.ActiveViewport.ChangeCounter;
-            this.OnPingDocument().ScheduleSolution(timestep, callback);
 
         }
 
@@ -142,18 +185,28 @@ namespace drawgh.Components
                 return;
 
             if (dp.IsDynamicDisplay)
+            {
+                wasDynamic = true;
                 return;
+            }
+            if (wasDynamic)
+            {
+                GenerateOutline(mesh);
+                wasDynamic = false;
+            }
+            if(oldCameraLocation.DistanceToSquared(dp.Viewport.CameraLocation) > 0.001)
+            {
+                GenerateOutline(mesh);
+            }
+
 
             for (int i = 0; i < outline.Length; i++)
             {
                 dp.DrawCurve(outline[i], col, t);
             }
+
+            oldCameraLocation = dp.Viewport.CameraLocation;
         }
-
-
-
-        //public override bool IsPreviewCapable => true;
-
 
         public override Guid ComponentGuid
         {
